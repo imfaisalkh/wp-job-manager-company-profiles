@@ -171,8 +171,13 @@ class Astoundify_Job_Manager_Companies {
 			return;
 
 		$meta_query = array(
+			'relation' => 'OR',
 			array(
 				'key'   => '_company_name',
+				'value' => urldecode( get_query_var( $this->slug ) )
+			),
+			array(
+				'key'   => '_company_slug',
 				'value' => urldecode( get_query_var( $this->slug ) )
 			)
 		);
@@ -238,15 +243,32 @@ class Astoundify_Job_Manager_Companies {
 			 ORDER BY pm.meta_value"
 		);
 
-		array_shift($companies); // remove first blank element
+		// array_shift($companies); // remove first blank element
 		
 		return $companies;
 	}
 
-	public function company_data($company_name) {
+	public function all_company_data($company_name) {
 		$query_args = array(
 			'post_type' => 'job_listing',
 			'posts_per_page'   => -1,
+			'meta_key'         => '_company_name',
+			'meta_value'       => $company_name
+		);
+		$company_query = new WP_Query( $query_args );
+
+		$company_data = array(
+			'count' 		  => count( $company_query->posts ),
+			'company_posts'   => $company_query->posts,
+		);
+
+		return $company_data;
+	}
+
+	public function last_company_data($company_name) {
+		$query_args = array(
+			'post_type' => 'job_listing',
+			'posts_per_page'   => 1,
 			'meta_key'         => '_company_name',
 			'meta_value'       => $company_name
 		);
@@ -262,9 +284,10 @@ class Astoundify_Job_Manager_Companies {
 		$company_tagline = get_field('_company_tagline', $last_id);
 
 		$company_data = array(
-			'count' 		  => count( $company_query->posts ),
+			'company_slug'    => get_field('_company_slug', $last_id),
+			'company_logo' 	  => get_the_post_thumbnail_url($last_id),
 			'company_info'    => $company_desc ? $company_desc : $company_tagline,
-			'company_size'    => get_field('_company_size', $last_id)
+			'company_size'    => get_field('_company_size', $last_id),
 		);
 
 		return $company_data;
@@ -279,15 +302,17 @@ class Astoundify_Job_Manager_Companies {
 	 * @param string $company_name
 	 * @return string $url The company profile URL.
 	 */
-	public function company_url( $company_name ) {
+	public function company_url( $company_slug, $company_name ) {
 		global $wp_rewrite;
 
 		$company_name = rawurlencode( $company_name );
+		// $company_name = sanitize_title_with_dashes( $company_name ); // slugify company name
+		$company_slug = $company_slug ? $company_slug : $company_name; // final slug
 
 		if ( $wp_rewrite->permalink_structure == '' ) {
-			$url = home_url( 'index.php?'. $this->slug . '=' . $company_name );
+			$url = home_url( 'index.php?'. $this->slug . '=' . $company_slug );
 		} else {
-			$url = home_url( '/' . $this->slug . '/' . trailingslashit( $company_name ) );
+			$url = home_url( '/' . $this->slug . '/' . trailingslashit( $company_slug ) );
 		}
 
 		return esc_url( $url );
