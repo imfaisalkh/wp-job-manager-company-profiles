@@ -3,7 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-$wpjmcl = new Astoundify_Job_Manager_Companies();
+$wpjmcl = new WP_Job_Manager_Companies();
 
 ?>
 <ul class="company_listings">

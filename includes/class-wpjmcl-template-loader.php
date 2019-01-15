@@ -30,6 +30,6 @@ class WPJMCL_Template_Loader extends Gamajo_Template_Loader {
 	 * @since 1.0.0
 	 * @type string
 	 */
-	protected $plugin_directory = WPJMCL_PLUGIN_DIR;
+	protected $plugin_directory = WP_JOB_MANAGER_COMPANY_PROFILES_PLUGIN_DIR;
  
 }

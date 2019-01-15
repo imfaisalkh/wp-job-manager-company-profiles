@@ -12,14 +12,11 @@
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-
-define( 'WPJMCL_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
-
-require WPJMCL_PLUGIN_DIR . 'includes/class-gamajo-template-loader.php';
-require WPJMCL_PLUGIN_DIR . 'includes/class-wpjmcl-template-loader.php';
+require WP_JOB_MANAGER_COMPANY_PROFILES_PLUGIN_DIR . 'includes/class-gamajo-template-loader.php';
+require WP_JOB_MANAGER_COMPANY_PROFILES_PLUGIN_DIR . 'includes/class-wpjmcl-template-loader.php';
 
 
-class Astoundify_Job_Manager_Companies {
+class WP_Job_Manager_Companies {
 
 	/**
 	 * @var $instance
@@ -96,8 +93,17 @@ class Astoundify_Job_Manager_Companies {
 		add_filter( 'query_vars', array( $this, 'query_vars' ) );
 		add_filter( 'pre_get_posts', array( $this, 'posts_filter' ) );
 		add_action( 'template_redirect', array( $this, 'template_loader' ) );
+		add_action( 'init', array( $this, 'register_company_slug_field' ) );
 
 		add_action( 'plugins_loaded', array( $this, 'load_plugin_textdomain' ) );
+
+		register_activation_hook( __FILE__, array( $this, 'plugin_activation' ) );
+	}
+
+	public function plugin_activation() {
+		// var_dump('Plugin Activated!');
+		flush_rewrite_rules();
+		$this->generate_company_slug();
 	}
 
 	/**
@@ -155,6 +161,36 @@ class Astoundify_Job_Manager_Companies {
 			locate_template( apply_filters( 'wp_job_manager_companies_templates', array( 'single-company.php', 'taxonomy-job_listing_category.php' ) ), true );
 
 		exit();
+	}
+
+	/**
+	 * Register Company Slug Field
+	 */
+	public function register_company_slug_field() {
+		// add field in "front-end"
+		function capstone_frontend_company_slug_field( $fields ) {
+			$fields['company']['company_slug'] = array(
+				'label'       => __( 'Company Slug', 'capstone' ),
+				'type'        => 'text',
+				'required'    => true,
+				'priority'    => 1.2,
+				'placeholder' => '',
+			);
+			return $fields;
+		}
+		add_filter( 'submit_job_form_fields', 'capstone_frontend_company_slug_field' );
+
+		// add field in "back-end"
+		function capstone_admin_company_slug_field( $fields ) {
+			$fields['_company_slug'] = array(
+			'label'       => __( 'Company Slug', 'capstone' ),
+			'type'        => 'text',
+			'required'    => true,
+			'description' => esc_html__('If defined It\'ll be used in company permalink.', 'capstone'),
+			);
+			return $fields;
+		}
+		add_filter( 'job_manager_job_listing_data_fields', 'capstone_admin_company_slug_field' );
 	}
 
 	/**
@@ -228,7 +264,7 @@ class Astoundify_Job_Manager_Companies {
 	}
 
 	/**
-	 * Company profile URL. Depending on our permalink structure we might
+	 * Return all company names in an array
 	 */
 	public function get_companies() {
 		global $wpdb;
@@ -248,6 +284,9 @@ class Astoundify_Job_Manager_Companies {
 		return $companies;
 	}
 
+	/**
+	 * Return all posts for the given company
+	 */
 	public function all_company_data($company_name) {
 		$query_args = array(
 			'post_type' => 'job_listing',
@@ -265,6 +304,9 @@ class Astoundify_Job_Manager_Companies {
 		return $company_data;
 	}
 
+	/**
+	 * Return latest info for the given company
+	 */
 	public function last_company_data($company_name) {
 		$query_args = array(
 			'post_type' => 'job_listing',
@@ -319,6 +361,34 @@ class Astoundify_Job_Manager_Companies {
 	}
 
 	/**
+	 * Generate company slugs if called upon.
+	 *
+	 * @since WP Job Manager - Company Profiles 1.0.0
+	 *
+	 */
+	public function generate_company_slug() {
+		$query_args = array(
+			'post_type' => 'job_listing',
+			'posts_per_page'   => -1,
+		);
+		$company_query = new WP_Query( $query_args );
+
+		// loop throught each company post
+		foreach( $company_query->posts as $company_post ) {
+			$company_id = $company_post->ID;
+			$company_name = get_field('_company_name', $company_id);
+			$company_slug = get_field('_company_slug', $company_id);
+			
+			// update company slug if not already defined
+			if (!$company_slug) {
+				update_post_meta($company_id, '_company_slug', sanitize_title_with_dashes( $company_name ) );
+			}
+		}
+
+		return true;
+	}
+
+	/**
 	 * Set a page title when viewing an individual company.
 	 *
 	 * @since WP Job Manager - Company Profiles 1.2
@@ -360,4 +430,3 @@ class Astoundify_Job_Manager_Companies {
 		load_plugin_textdomain( 'wp-job-manager-companies', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 	}
 }
-add_action( 'plugins_loaded', array( 'Astoundify_Job_Manager_Companies', 'instance' ) );
