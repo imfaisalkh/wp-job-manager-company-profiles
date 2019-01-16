@@ -29,7 +29,7 @@ class WP_Job_Manager_Companies {
 	private $slug;
 
 	/**
-	 * Make sure only one instance is only running.
+	 * Make sure only one instance is running.
 	 */
 	public static function instance() {
 		if ( ! isset ( self::$instance ) ) {
@@ -101,7 +101,6 @@ class WP_Job_Manager_Companies {
 	}
 
 	public function plugin_activation() {
-		// var_dump('Plugin Activated!');
 		flush_rewrite_rules();
 		$this->generate_company_slug();
 	}
@@ -302,6 +301,22 @@ class WP_Job_Manager_Companies {
 		);
 
 		return $company_data;
+	}
+
+
+	/**
+	 * Return total positions for a given company
+	 */
+	public function get_positions_count($company_name) {
+		$query_args = array(
+			'post_type' => 'job_listing',
+			'posts_per_page'   => -1,
+			'meta_key'         => '_company_name',
+			'meta_value'       => $company_name
+		);
+		$company_query = new WP_Query( $query_args );
+
+		return count( $company_query->posts );
 	}
 
 	/**

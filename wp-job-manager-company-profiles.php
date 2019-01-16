@@ -69,8 +69,7 @@ require plugin_dir_path( __FILE__ ) . 'includes/class-wp-job-manager-company-pro
  */
 function run_plugin_name() {
 
-	// $plugin = new Plugin_Name();
-	// $plugin->run();
-	add_action( 'plugins_loaded', array( 'WP_Job_Manager_Companies', 'instance' ) );
+	$GLOBALS['wpjmcp'] = new WP_Job_Manager_Companies(); 
+	// add_action( 'plugins_loaded', array( 'WP_Job_Manager_Companies', 'instance' ) );
 }
 run_plugin_name();
