@@ -93,7 +93,7 @@ class WP_Job_Manager_Companies {
 		add_filter( 'query_vars', array( $this, 'query_vars' ) );
 		add_filter( 'pre_get_posts', array( $this, 'posts_filter' ) );
 		add_action( 'template_redirect', array( $this, 'template_loader' ) );
-		add_action( 'init', array( $this, 'register_company_slug_field' ) );
+		add_action( 'body_class', array( $this, 'single_company_class' ) );
 
 		add_action( 'plugins_loaded', array( $this, 'load_plugin_textdomain' ) );
 
@@ -117,6 +117,10 @@ class WP_Job_Manager_Companies {
 		$vars[] = $this->slug;
 
 		return $vars;
+	}
+
+	public function get_slug() {
+		return $this->slug;
 	}
 
 	/**
@@ -163,33 +167,19 @@ class WP_Job_Manager_Companies {
 	}
 
 	/**
-	 * Register Company Slug Field
+	 * Add Classes to Single Company Page
 	 */
-	public function register_company_slug_field() {
-		// add field in "front-end"
-		function capstone_frontend_company_slug_field( $fields ) {
-			$fields['company']['company_slug'] = array(
-				'label'       => __( 'Company Slug', 'capstone' ),
-				'type'        => 'text',
-				'required'    => true,
-				'priority'    => 1.2,
-				'placeholder' => '',
-			);
-			return $fields;
-		}
-		add_filter( 'submit_job_form_fields', 'capstone_frontend_company_slug_field' );
+	public function single_company_class($classes) {
+		global $post;
 
-		// add field in "back-end"
-		function capstone_admin_company_slug_field( $fields ) {
-			$fields['_company_slug'] = array(
-			'label'       => __( 'Company Slug', 'capstone' ),
-			'type'        => 'text',
-			'required'    => true,
-			'description' => esc_html__('If defined It\'ll be used in company permalink.', 'capstone'),
-			);
-			return $fields;
+		// remove 'blog' class
+		if (get_query_var( $this->slug )) {
+			unset( $classes[ array_search( 'blog', $classes ) ] );
 		}
-		add_filter( 'job_manager_job_listing_data_fields', 'capstone_admin_company_slug_field' );
+
+		// add 'single-company' class
+		$classes[] = get_query_var( $this->slug ) ? 'single-company' : '';
+		return $classes;
 	}
 
 	/**

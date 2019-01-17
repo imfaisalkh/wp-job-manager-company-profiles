@@ -57,6 +57,7 @@ register_deactivation_hook( __FILE__, 'deactivate_plugin_name' );
  * admin-specific hooks, and public-facing site hooks.
  */
 require plugin_dir_path( __FILE__ ) . 'includes/class-wp-job-manager-company-profiles.php';
+require plugin_dir_path( __FILE__ ) . 'includes/class-wp-job-manager-company-fields.php';
 
 /**
  * Begins execution of the plugin.
@@ -70,6 +71,6 @@ require plugin_dir_path( __FILE__ ) . 'includes/class-wp-job-manager-company-pro
 function run_plugin_name() {
 
 	$GLOBALS['wpjmcp'] = new WP_Job_Manager_Companies(); 
-	// add_action( 'plugins_loaded', array( 'WP_Job_Manager_Companies', 'instance' ) );
+	add_action( 'plugins_loaded', array( 'WP_Job_Manager_Company_Fields', 'instance' ) );
 }
 run_plugin_name();
