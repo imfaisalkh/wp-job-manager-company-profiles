@@ -13,7 +13,7 @@
  * Author URI:        https://wpscouts.net
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
- * Text Domain:       wp-job-manage-company-profiles
+ * Text Domain:       wp-job-manager-company-profiles
  * Domain Path:       /languages
  */
 
