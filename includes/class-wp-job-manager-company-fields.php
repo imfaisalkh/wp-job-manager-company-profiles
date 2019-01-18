@@ -136,7 +136,7 @@ class WP_Job_Manager_Company_Fields {
 		// add field in "front-end"
 		function frontend_company_slug_field( $fields ) {
 			$fields['company']['company_slug'] = array(
-				'label'       => __( 'Company Slug', 'capstone' ),
+				'label'       => esc_html__( 'Company Slug', 'wp-job-manager-company-profiles' ),
 				'type'        => 'text',
 				'required'    => true,
 				'priority'    => 4,
@@ -149,10 +149,10 @@ class WP_Job_Manager_Company_Fields {
 		// add field in "back-end"
 		function admin_company_slug_field( $fields ) {
 			$fields['_company_slug'] = array(
-			'label'       => __( 'Company Slug', 'capstone' ),
+			'label'       => esc_html__( 'Company Slug', 'wp-job-manager-company-profiles' ),
 			'type'        => 'text',
 			'required'    => true,
-			'description' => esc_html__('If defined It\'ll be used in company permalink.', 'capstone'),
+			'description' => esc_html__('If defined It\'ll be used in company permalink.', 'wp-job-manager-company-profiles'),
 			);
 			return $fields;
 		}
@@ -166,7 +166,7 @@ class WP_Job_Manager_Company_Fields {
 		// add field in "front-end"
 		function frontend_company_foundation_field( $fields ) {
 			$fields['company']['company_foundation'] = array(
-				'label'       => __( 'Foundation Year', 'capstone' ),
+				'label'       => esc_html__( 'Foundation Year', 'wp-job-manager-company-profiles' ),
 				'type'        => 'text',
 				'required'    => false,
 				'priority'    => 4,
@@ -179,7 +179,7 @@ class WP_Job_Manager_Company_Fields {
 		// add field in "back-end"
 		function admin_company_foundation_field( $fields ) {
 			$fields['_company_foundation'] = array(
-                'label'       => __( 'Foundation Year', 'capstone' ),
+                'label'       => esc_html__( 'Foundation Year', 'wp-job-manager-company-profiles' ),
                 'type'        => 'text',
                 'required'    => false,
 			);
@@ -195,7 +195,7 @@ class WP_Job_Manager_Company_Fields {
 		// add field in "front-end"
 		function frontend_company_facebook_field( $fields ) {
 			$fields['company']['company_facebook'] = array(
-				'label'       => __( 'Facebook Username', 'capstone' ),
+				'label'       => esc_html__( 'Facebook Username', 'wp-job-manager-company-profiles' ),
 				'type'        => 'text',
 				'required'    => false,
 				'priority'    => 4,
@@ -207,7 +207,7 @@ class WP_Job_Manager_Company_Fields {
 		// add field in "back-end"
 		function admin_company_facebook_field( $fields ) {
 			$fields['_company_facebook'] = array(
-                'label'       => __( 'Facebook Username', 'capstone' ),
+                'label'       => esc_html__( 'Facebook Username', 'wp-job-manager-company-profiles' ),
                 'type'        => 'text',
                 'required'    => false,
 			);
@@ -223,7 +223,7 @@ class WP_Job_Manager_Company_Fields {
 		// add field in "front-end"
 		function frontend_company_linkedin_field( $fields ) {
 			$fields['company']['company_linkedin'] = array(
-				'label'       => __( 'LinkedIn Username', 'capstone' ),
+				'label'       => esc_html__( 'LinkedIn Username', 'wp-job-manager-company-profiles' ),
 				'type'        => 'text',
 				'required'    => false,
 				'priority'    => 9,
@@ -235,7 +235,7 @@ class WP_Job_Manager_Company_Fields {
 		// add field in "back-end"
 		function admin_company_linkedin_field( $fields ) {
 			$fields['_company_linkedin'] = array(
-                'label'       => __( 'LinkedIn Username', 'capstone' ),
+                'label'       => esc_html__( 'LinkedIn Username', 'wp-job-manager-company-profiles' ),
                 'type'        => 'text',
                 'required'    => false,
 			);
@@ -252,10 +252,10 @@ class WP_Job_Manager_Company_Fields {
         // add field in "front-end"
         function frontend_company_description_field( $fields ) {
             $fields['company']['company_description'] = array(
-                'label'       => __( 'Description', 'capstone' ),
+                'label'       => esc_html__( 'Description', 'wp-job-manager-company-profiles' ),
                 'type'        => 'textarea',
                 'required'    => false,
-                'description' => __( 'Describe your company in a few words.', 'capstone' ),
+                'description' => esc_html__( 'Describe your company in a few words.', 'wp-job-manager-company-profiles' ),
                 'priority'    => 4
             );
             return $fields;
@@ -265,10 +265,10 @@ class WP_Job_Manager_Company_Fields {
         // add field in "back-end"
         function admin_company_description_field( $fields ) {
             $fields['_company_description'] = array(
-            'label'       => __( 'Company Description', 'capstone' ),
+            'label'       => esc_html__( 'Company Description', 'wp-job-manager-company-profiles' ),
             'type'        => 'textarea',
             'required'    => false,
-            'placeholder' => __( 'Describe your company in a few words.', 'capstone' ),
+            'placeholder' => esc_html__( 'Describe your company in a few words.', 'wp-job-manager-company-profiles' ),
             );
             return $fields;
         }
@@ -282,7 +282,7 @@ class WP_Job_Manager_Company_Fields {
         // add field in "front-end"
         function frontend_company_email_field( $fields ) {
             $fields['company']['company_email'] = array(
-                'label'       => esc_html__( 'Company Email', 'capstone' ),
+                'label'       => esc_html__( 'Company Email', 'wp-job-manager-company-profiles' ),
                 'type'        => 'text',
                 'required'    => false,
                 'priority'    => 4
@@ -294,11 +294,11 @@ class WP_Job_Manager_Company_Fields {
         // add field in "back-end"
         function admin_company_email_field( $fields ) {
             $fields['_company_email'] = array(
-            'label'       => __( 'Company Email', 'capstone' ),
+            'label'       => esc_html__( 'Company Email', 'wp-job-manager-company-profiles' ),
             'type'        => 'text',
             'required'    => false,
-            'placeholder' => esc_html__( 'Company email which is used to contact company', 'capstone' ),
-            'description' => esc_html__( 'Company Website will be used for contact, if email not provided.', 'capstone' )
+            'placeholder' => esc_html__( 'Company email which is used to contact company', 'wp-job-manager-company-profiles' ),
+            'description' => esc_html__( 'Company Website will be used for contact, if email not provided.', 'wp-job-manager-company-profiles' )
             );
             return $fields;
         }
@@ -312,7 +312,7 @@ class WP_Job_Manager_Company_Fields {
         // add field in "front-end"
         function frontend_company_location_field( $fields ) {
             $fields['company']['company_location'] = array(
-                'label'       => __( 'Location', 'capstone' ),
+                'label'       => esc_html__( 'Location', 'wp-job-manager-company-profiles' ),
                 'type'        => 'text',
                 'required'    => false,
                 'placeholder' => 'e.g. Paris',
@@ -325,7 +325,7 @@ class WP_Job_Manager_Company_Fields {
         // add field in "back-end"
         function admin_company_location_field( $fields ) {
             $fields['_company_location'] = array(
-            'label'       => __( 'Company Location', 'capstone' ),
+            'label'       => esc_html__( 'Company Location', 'wp-job-manager-company-profiles' ),
             'type'        => 'text',
             'required'    => false,
             'placeholder' => 'e.g. Paris',
@@ -344,7 +344,7 @@ class WP_Job_Manager_Company_Fields {
         // add field in "front-end"
         function frontend_company_size_field( $fields ) {
             $fields['company']['company_size'] = array(
-                'label'       => __( 'Company Size', 'capstone' ),
+                'label'       => esc_html__( 'Company Size', 'wp-job-manager-company-profiles' ),
                 'type'        => 'select',
                 'required'    => false,
                 'options'     => apply_filters( 'wpjmcp_company_size_options', array('') ),
@@ -357,7 +357,7 @@ class WP_Job_Manager_Company_Fields {
         // add field in "back-end"
         function admin_company_size_field( $fields ) {
             $fields['_company_size'] = array(
-            'label'       => __( 'Company Size', 'capstone' ),
+            'label'       => esc_html__( 'Company Size', 'wp-job-manager-company-profiles' ),
             'type'        => 'select',
             'options'     => apply_filters( 'wpjmcp_company_size_options', array('') ),
             'description' => ''
@@ -374,7 +374,7 @@ class WP_Job_Manager_Company_Fields {
         // add field in "front-end"
         function frontend_company_industry_field( $fields ) {
             $fields['company']['company_industry'] = array(
-                'label'       => __( 'Industry', 'capstone' ),
+                'label'       => esc_html__( 'Industry', 'wp-job-manager-company-profiles' ),
                 'type'        => 'select',
                 'required'    => false,
                 'options'     => apply_filters( 'wpjmcp_company_industry_options', array('') ),
@@ -387,7 +387,7 @@ class WP_Job_Manager_Company_Fields {
         // add field in "back-end"
         function admin_company_industry_field( $fields ) {
             $fields['_company_industry'] = array(
-                'label'       => __( 'Company Industry', 'capstone' ),
+                'label'       => esc_html__( 'Company Industry', 'wp-job-manager-company-profiles' ),
                 'type'        => 'select',
                 'options'     => apply_filters( 'wpjmcp_company_industry_options', array('') ),
                 'description' => ''

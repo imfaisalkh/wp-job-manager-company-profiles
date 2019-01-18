@@ -299,7 +299,7 @@ class WP_Job_Manager_Companies {
 	 */
 	public function get_positions_count($company_name) {
 		$query_args = array(
-			'post_type' => 'job_listing',
+			'post_type' 	   => 'job_listing',
 			'posts_per_page'   => -1,
 			'meta_key'         => '_company_name',
 			'meta_value'       => $company_name
@@ -374,7 +374,7 @@ class WP_Job_Manager_Companies {
 	 */
 	public function generate_company_slug() {
 		$query_args = array(
-			'post_type' => 'job_listing',
+			'post_type' 	   => 'job_listing',
 			'posts_per_page'   => -1,
 		);
 		$company_query = new WP_Query( $query_args );

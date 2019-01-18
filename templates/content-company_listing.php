@@ -30,7 +30,7 @@ $wpjmcp = new WP_Job_Manager_Companies();
 						</p>
 					</div>
 					<ul class="company-meta">
-						<li class="open-positions"><?php echo esc_attr($all_company_data['count']); ?> Positions</li>
+						<li class="open-positions"><?php echo esc_attr($all_company_data['count']); ?> <?php echo _n( 'Position', 'Positions', $all_company_data['count'], 'wp-job-manager-company-profiles' ); ?></li>
 						<li class="location"><?php echo esc_html($last_company_data['company_location']); ?></li>
 					</ul>
 				</a>

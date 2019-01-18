@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2019-01-17T03:51:41+00:00\n"
+"POT-Creation-Date: 2019-01-17T22:04:09+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.1.0\n"
 "X-Domain: wp-job-manager-company-profiles\n"
@@ -31,6 +31,11 @@ msgstr ""
 msgid "Faisal Khurshid"
 msgstr ""
 
+#: templates/content-company_listing.php:33
+msgid "Position"
+msgid_plural "Positions"
+msgstr[0] ""
+
 #: templates/content-company_listing.php:40
 msgid "Open Positions"
 msgstr ""
@@ -41,6 +46,77 @@ msgstr ""
 
 #: templates/content-company_listing.php:59
 msgid "Anywhere"
+msgstr ""
+
+#: includes/class-wp-job-manager-company-fields.php:139
+#: includes/class-wp-job-manager-company-fields.php:152
+msgid "Company Slug"
+msgstr ""
+
+#: includes/class-wp-job-manager-company-fields.php:155
+msgid "If defined It'll be used in company permalink."
+msgstr ""
+
+#: includes/class-wp-job-manager-company-fields.php:169
+#: includes/class-wp-job-manager-company-fields.php:182
+msgid "Foundation Year"
+msgstr ""
+
+#: includes/class-wp-job-manager-company-fields.php:198
+#: includes/class-wp-job-manager-company-fields.php:210
+msgid "Facebook Username"
+msgstr ""
+
+#: includes/class-wp-job-manager-company-fields.php:226
+#: includes/class-wp-job-manager-company-fields.php:238
+msgid "LinkedIn Username"
+msgstr ""
+
+#: includes/class-wp-job-manager-company-fields.php:255
+msgid "Description"
+msgstr ""
+
+#: includes/class-wp-job-manager-company-fields.php:258
+#: includes/class-wp-job-manager-company-fields.php:271
+msgid "Describe your company in a few words."
+msgstr ""
+
+#: includes/class-wp-job-manager-company-fields.php:268
+msgid "Company Description"
+msgstr ""
+
+#: includes/class-wp-job-manager-company-fields.php:285
+#: includes/class-wp-job-manager-company-fields.php:297
+msgid "Company Email"
+msgstr ""
+
+#: includes/class-wp-job-manager-company-fields.php:300
+msgid "Company email which is used to contact company"
+msgstr ""
+
+#: includes/class-wp-job-manager-company-fields.php:301
+msgid "Company Website will be used for contact, if email not provided."
+msgstr ""
+
+#: includes/class-wp-job-manager-company-fields.php:315
+msgid "Location"
+msgstr ""
+
+#: includes/class-wp-job-manager-company-fields.php:328
+msgid "Company Location"
+msgstr ""
+
+#: includes/class-wp-job-manager-company-fields.php:347
+#: includes/class-wp-job-manager-company-fields.php:360
+msgid "Company Size"
+msgstr ""
+
+#: includes/class-wp-job-manager-company-fields.php:377
+msgid "Industry"
+msgstr ""
+
+#: includes/class-wp-job-manager-company-fields.php:390
+msgid "Company Industry"
 msgstr ""
 
 #: includes/class-wp-job-manager-company-profiles.php:76
