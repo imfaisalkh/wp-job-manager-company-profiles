@@ -229,9 +229,7 @@ class WP_Job_Manager_Companies {
 	 * @return string The shortcode HTML output
 	 */
 	public function shortcode( $atts ) {
-		$atts = shortcode_atts( array(
-			'show_letters' => true
-		), $atts );
+		$atts = shortcode_atts( array(), $atts );
 
 		return $this->build_company_archive( $atts );
 	}
@@ -253,24 +251,89 @@ class WP_Job_Manager_Companies {
 	}
 
 	/**
-	 * Return all company names in an array
+	 * Return all industry names in an array
 	 */
-	public function get_companies() {
+	public function get_industries() {
 		global $wpdb;
 
-		$companies = $wpdb->get_col(
-			"SELECT pm.meta_value FROM {$wpdb->postmeta} pm
-			 LEFT JOIN {$wpdb->posts} p ON p.ID = pm.post_id
-			 WHERE pm.meta_key = '_company_name'
-			 AND p.post_status = 'publish'
-			 AND p.post_type = 'job_listing'
-			 GROUP BY pm.meta_value
-			 ORDER BY pm.meta_value"
+		// base query for 'job_listing'
+		$args = array(
+			'post_type' => 'job_listing',
+			'posts_per_page' => -1,
+			'post_status' => 'publish',
 		);
 
-		// array_shift($companies); // remove first blank element
+		// prepare query
+		$query = new WP_Query( $args );
 		
+		$industries = array();
+
+		while ( $query->have_posts() ) : $query->the_post();
+			$industries[] = get_field( '_company_industry', get_the_ID() );
+		endwhile;
+
+		$industries = array_unique($industries);
+
+		return $industries;
+
+	}
+
+	/**
+	 * Return all company names in an array
+	 */
+	public function get_companies($keyword=null, $location=null, $industry=null) {
+		global $wpdb;
+
+		// base query for 'job_listing'
+		$args = array(
+			'post_type' => 'job_listing',
+			'posts_per_page' => -1,
+			'post_status' => 'publish',
+		);
+
+		// push 'meta_query' if $keyword is defined
+		if ($keyword) {
+			$keyword_search[] = array(
+				'key'     => '_company_name',
+				'value'   => $keyword,
+				'compare' => 'like',
+			);
+			$args['meta_query'][] = $keyword_search;
+		}
+
+		// push another 'meta_query' if $location is defined
+		if ($location) {
+			$location_search[] = array(
+				'key'     => '_company_location',
+				'value'   => $location,
+				'compare' => 'like',
+			);
+			$args['meta_query'][] = $location_search;
+		}
+
+		// push just another 'meta_query' if $industry is defined
+		if ($industry) {
+			$industry_search[] = array(
+				'key'     => '_company_industry',
+				'value'   => $industry,
+				'compare' => 'like',
+			);
+			$args['meta_query'][] = $industry_search;
+		}
+		
+		// prepare query
+		$query = new WP_Query( $args );
+		
+		$companies = array();
+
+		while ( $query->have_posts() ) : $query->the_post();
+			$companies[] = get_field( '_company_name', get_the_ID() );
+		endwhile;
+
+		$companies = array_unique($companies);
+
 		return $companies;
+
 	}
 
 	/**
@@ -289,6 +352,8 @@ class WP_Job_Manager_Companies {
 			'count' 		  => count( $company_query->posts ),
 			'company_posts'   => $company_query->posts,
 		);
+
+		wp_reset_postdata();
 
 		return $company_data;
 	}
