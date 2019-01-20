@@ -1,6 +1,6 @@
 <?php
 /**
- * @link              http://example.com
+ * @link              https://wpscouts.net
  * @since             1.0.0
  * @package           WP_JOB_MANAGER_COMPANY_PROFILES
  *
