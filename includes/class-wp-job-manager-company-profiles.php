@@ -12,7 +12,7 @@
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-require WP_JOB_MANAGER_COMPANY_PROFILES_PLUGIN_DIR . 'includes/class-gamajo-template-loader.php';
+// Import Classes
 require WP_JOB_MANAGER_COMPANY_PROFILES_PLUGIN_DIR . 'includes/class-wpjmcl-template-loader.php';
 
 

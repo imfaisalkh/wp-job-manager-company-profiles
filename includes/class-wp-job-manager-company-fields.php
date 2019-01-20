@@ -139,7 +139,7 @@ class WP_Job_Manager_Company_Fields {
 				'label'       => esc_html__( 'Company Slug', 'wp-job-manager-company-profiles' ),
 				'type'        => 'text',
 				'required'    => true,
-				'priority'    => 4,
+				'priority'    => 2,
 				'placeholder' => '',
 			);
 			return $fields;
@@ -182,6 +182,7 @@ class WP_Job_Manager_Company_Fields {
                 'label'       => esc_html__( 'Foundation Year', 'wp-job-manager-company-profiles' ),
                 'type'        => 'text',
                 'required'    => false,
+                'placeholder' => 'e.g. 1992',
 			);
 			return $fields;
 		}

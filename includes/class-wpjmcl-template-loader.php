@@ -1,4 +1,7 @@
 <?php
+
+// Import Classes
+require WP_JOB_MANAGER_COMPANY_PROFILES_PLUGIN_DIR . 'includes/lib/class-gamajo-template-loader.php';
  
 /**
  * Template loader for PW Sample Plugin.
