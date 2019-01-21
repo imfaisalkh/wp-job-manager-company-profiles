@@ -211,6 +211,7 @@ class WP_Job_Manager_Company_Fields {
                 'label'       => esc_html__( 'Facebook Username', 'wp-job-manager-company-profiles' ),
                 'type'        => 'text',
                 'required'    => false,
+                'placeholder' => '',
 			);
 			return $fields;
 		}
@@ -239,6 +240,7 @@ class WP_Job_Manager_Company_Fields {
                 'label'       => esc_html__( 'LinkedIn Username', 'wp-job-manager-company-profiles' ),
                 'type'        => 'text',
                 'required'    => false,
+                'placeholder' => '',
 			);
 			return $fields;
 		}
@@ -295,11 +297,11 @@ class WP_Job_Manager_Company_Fields {
         // add field in "back-end"
         function admin_company_email_field( $fields ) {
             $fields['_company_email'] = array(
-            'label'       => esc_html__( 'Company Email', 'wp-job-manager-company-profiles' ),
-            'type'        => 'text',
-            'required'    => false,
-            'placeholder' => esc_html__( 'Company email which is used to contact company', 'wp-job-manager-company-profiles' ),
-            'description' => esc_html__( 'Company Website will be used for contact, if email not provided.', 'wp-job-manager-company-profiles' )
+                'label'       => esc_html__( 'Company Email', 'wp-job-manager-company-profiles' ),
+                'type'        => 'text',
+                'required'    => false,
+                'placeholder' => esc_html__( 'Company email which is used to contact company', 'wp-job-manager-company-profiles' ),
+                'description' => esc_html__( 'Company Website will be used for contact, if email not provided.', 'wp-job-manager-company-profiles' )
             );
             return $fields;
         }
