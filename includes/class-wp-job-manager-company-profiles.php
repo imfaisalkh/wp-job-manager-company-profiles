@@ -1,13 +1,4 @@
 <?php
-/**
- * Plugin Name: WP Job Manager - Company Profiles
- * Plugin URI:  https://github.com/astoundify/wp-job-manager-company-profiles
- * Description: Output a list of all companies that have posted a job, with a link to a company profile.
- * Author:      Astoundify
- * Author URI:  http://astoundify.com
- * Version:     1.3
- * Text Domain: wp-job-manager-company-profiles
- */
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) exit;
@@ -102,7 +93,7 @@ class WP_Job_Manager_Companies {
 
 	public function plugin_activation() {
 		flush_rewrite_rules();
-		$this->generate_company_slug();
+		// $this->generate_company_slug();
 	}
 
 	/**
@@ -251,44 +242,122 @@ class WP_Job_Manager_Companies {
 	}
 
 	/**
-	 * Return all industry names in an array
+	 * Return "all" industry names in an array
 	 */
 	public function get_industries() {
 		global $wpdb;
-
-		// base query for 'job_listing'
-		$args = array(
-			'post_type' => 'job_listing',
-			'posts_per_page' => -1,
-			'post_status' => 'publish',
+		$industries = $wpdb->get_col(
+			"SELECT pm.meta_value FROM {$wpdb->postmeta} pm
+			 LEFT JOIN {$wpdb->posts} p ON p.ID = pm.post_id
+			 WHERE pm.meta_key = '_company_industry'
+			 AND p.post_status = 'publish'
+			 AND p.post_type = 'job_listing'
+			 GROUP BY pm.meta_value
+			 ORDER BY pm.meta_value"
 		);
-
-		// prepare query
-		$query = new WP_Query( $args );
 		
-		$industries = array();
-
-		while ( $query->have_posts() ) : $query->the_post();
-			$industries[] = get_field( '_company_industry', get_the_ID() );
-		endwhile;
-
-		$industries = array_unique($industries);
-
 		return $industries;
-
 	}
 
 	/**
-	 * Return all company names in an array
+	 * Return all company "names" in an array
 	 */
-	public function get_companies($keyword=null, $location=null, $industry=null) {
+	public function get_companies() {
 		global $wpdb;
 
-		// base query for 'job_listing'
+		$companies = $wpdb->get_col(
+			"SELECT pm.meta_value FROM {$wpdb->postmeta} pm
+			 LEFT JOIN {$wpdb->posts} p ON p.ID = pm.post_id
+			 WHERE pm.meta_key = '_company_name'
+			 AND p.post_status = 'publish'
+			 AND p.post_type = 'job_listing'
+			 GROUP BY pm.meta_value
+			 ORDER BY pm.meta_value"
+		);
+		
+		return $companies;
+	}
+
+	/**
+	 * Return "count" of posts for a given company
+	 */
+	public function get_company_count($company_name) {
+
+		global $wpdb;
+		$count = $wpdb->get_var(
+			"SELECT COUNT(pm.meta_value) FROM {$wpdb->postmeta} pm
+			 LEFT JOIN {$wpdb->posts} p ON p.ID = pm.post_id
+			 WHERE pm.meta_key = '_company_name'
+			 AND pm.meta_value = '{$company_name}'
+			 AND p.post_status = 'publish'
+			 AND p.post_type = 'job_listing'"
+		);
+		
+		return $count;
+	}
+
+	/**
+	 * Return latest info for the given company (based on last entry)
+	 */
+	public function get_company_info($company_name) {
+		$query_args = array(
+			'post_type' 	   => 'job_listing',
+			'posts_per_page'   => 1,
+			'meta_key'         => '_company_name',
+			'meta_value'       => $company_name,
+			'post_status' 	   => 'publish',
+			'no_found_rows'    => true, 
+		);
+		$company_query = new WP_Query( $query_args );
+
+		// get last company post
+		foreach( $company_query->posts as $company_post ) {
+			$last_id = $company_post->ID;
+		}
+		
+		// intermediary variables
+		$company_desc = get_field('_company_description', $last_id);
+		$company_tagline = get_field('_company_tagline', $last_id);
+
+		$company_data = array(
+			'company_slug'    => get_field('_company_slug', $last_id),
+			'company_logo' 	  => get_the_post_thumbnail_url($last_id),
+			'company_info'    => $company_desc ? $company_desc : $company_tagline,
+			'company_location'=> get_field('_company_location', $last_id),
+			'company_size'    => get_field('_company_size', $last_id),
+		);
+
+		return $company_data;
+	}
+
+	/**
+	 * Return company specific "posts"
+	 */
+	public function get_company_posts($company_name, $count=10) {
+		$query_args = array(
+			'post_type' => 'job_listing',
+			'posts_per_page'   => $count,
+			'meta_key'         => '_company_name',
+			'meta_value'       => $company_name,
+			'post_status' 	   => 'publish',
+			'no_found_rows'    => true, 
+		);
+		
+		$query = new WP_Query( $query_args );
+
+		return $query->posts;
+	}
+
+
+	/**
+	 * Return companies "names" based on given criteria (unlike get_companies()).
+	 */
+	public function get_companies_query($count = 10, $keyword = null, $location = null, $industry = null) {
 		$args = array(
 			'post_type' => 'job_listing',
-			'posts_per_page' => -1,
+			'posts_per_page'   => $count, //here $count considers number of jobs NOT companies
 			'post_status' => 'publish',
+			'no_found_rows' => true,
 		);
 
 		// push 'meta_query' if $keyword is defined
@@ -320,10 +389,10 @@ class WP_Job_Manager_Companies {
 			);
 			$args['meta_query'][] = $industry_search;
 		}
-		
-		// prepare query
+
+		// prepare final query
 		$query = new WP_Query( $args );
-		
+
 		$companies = array();
 
 		while ( $query->have_posts() ) : $query->the_post();
@@ -333,78 +402,8 @@ class WP_Job_Manager_Companies {
 		$companies = array_unique($companies);
 
 		return $companies;
-
 	}
 
-	/**
-	 * Return all posts for the given company
-	 */
-	public function all_company_data($company_name) {
-		$query_args = array(
-			'post_type' => 'job_listing',
-			'posts_per_page'   => -1,
-			'meta_key'         => '_company_name',
-			'meta_value'       => $company_name
-		);
-		$company_query = new WP_Query( $query_args );
-
-		$company_data = array(
-			'count' 		  => count( $company_query->posts ),
-			'company_posts'   => $company_query->posts,
-		);
-
-		wp_reset_postdata();
-
-		return $company_data;
-	}
-
-
-	/**
-	 * Return total positions for a given company
-	 */
-	public function get_positions_count($company_name) {
-		$query_args = array(
-			'post_type' 	   => 'job_listing',
-			'posts_per_page'   => -1,
-			'meta_key'         => '_company_name',
-			'meta_value'       => $company_name
-		);
-		$company_query = new WP_Query( $query_args );
-
-		return count( $company_query->posts );
-	}
-
-	/**
-	 * Return latest info for the given company
-	 */
-	public function last_company_data($company_name) {
-		$query_args = array(
-			'post_type' => 'job_listing',
-			'posts_per_page'   => 1,
-			'meta_key'         => '_company_name',
-			'meta_value'       => $company_name
-		);
-		$company_query = new WP_Query( $query_args );
-
-		// get last company post
-		foreach( $company_query->posts as $company_post ) {
-			$last_id = $company_post->ID;
-		}
-		
-		// intermediary variables
-		$company_desc = get_field('_company_description', $last_id);
-		$company_tagline = get_field('_company_tagline', $last_id);
-
-		$company_data = array(
-			'company_slug'    => get_field('_company_slug', $last_id),
-			'company_logo' 	  => get_the_post_thumbnail_url($last_id),
-			'company_info'    => $company_desc ? $company_desc : $company_tagline,
-			'company_location'=> get_field('_company_location', $last_id),
-			'company_size'    => get_field('_company_size', $last_id),
-		);
-
-		return $company_data;
-	}
 
 	/**
 	 * Company profile URL. Depending on our permalink structure we might
@@ -441,6 +440,8 @@ class WP_Job_Manager_Companies {
 		$query_args = array(
 			'post_type' 	   => 'job_listing',
 			'posts_per_page'   => -1,
+			'no_found_rows' => true, 
+			'fields' => 'ids',
 		);
 		$company_query = new WP_Query( $query_args );
 

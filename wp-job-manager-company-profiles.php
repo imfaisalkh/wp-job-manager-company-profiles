@@ -1,14 +1,10 @@
 <?php
 /**
- * @link              https://wpscouts.net
- * @since             1.0.0
- * @package           WP_JOB_MANAGER_COMPANY_PROFILES
- *
  * @wordpress-plugin
  * Plugin Name:       WP Job Manager - Company Profiles
  * Plugin URI:        https://wpscouts.net
  * Description:       Output a list of all companies that have posted a job, with a link to a company profile.
- * Version:           1.0.0
+ * Version:           1.0.1
  * Author:            Faisal Khurshid
  * Author URI:        https://wpscouts.net
  * License:           GPL-2.0+
