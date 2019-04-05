@@ -69,10 +69,10 @@ class WP_Job_Manager_Company_Fields {
         add_action( 'init', array( $this, 'register_company_facebook_field' ) );
         add_action( 'init', array( $this, 'register_company_linkedin_field' ) );
         
-        // register field options
+        // // register field options
         add_action( 'init', array( $this, 'company_fields_options' ) );
         
-        // set fields priority
+        // // set fields priority
         add_filter( 'submit_job_form_fields', array( $this, 'company_fields_priority' ) );
     }
 
