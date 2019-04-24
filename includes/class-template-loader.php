@@ -9,7 +9,7 @@ require WP_JOB_MANAGER_COMPANY_PROFILES_PLUGIN_DIR . 'includes/lib/class-gamajo-
  * Only need to specify class properties here.
  *
  */
-class WPJMCL_Template_Loader extends Gamajo_Template_Loader {
+class WP_Job_Manager_Companies_Template_Loader extends Gamajo_Template_Loader {
  
 	/**
 	 * Prefix for filter names.

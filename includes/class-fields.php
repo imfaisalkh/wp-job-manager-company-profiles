@@ -3,52 +3,7 @@
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-class WP_Job_Manager_Company_Fields {
-
-	/**
-	 * @var $instance
-	 */
-	private static $instance;
-
-	/**
-	 * @var slug
-	 */
-	private $slug;
-
-	/**
-	 * Make sure only one instance is running.
-	 */
-	public static function instance() {
-		if ( ! isset ( self::$instance ) ) {
-			self::$instance = new self;
-		}
-
-		return self::$instance;
-	}
-
-	/**
-	 * Start things up.
-	 */
-	public function __construct() {
-		$this->setup_globals();
-		$this->setup_actions();
-	}
-
-	/**
-	 * Set some smart defaults to class variables. Allow some of them to be
-	 * filtered to allow for early overriding.
-	 *
-	 * @since WP Job Manager - Company Profiles 1.0
-	 *
-	 * @return void
-	 */
-	private function setup_globals() {
-		$this->file         = __FILE__;
-
-		$this->basename     = plugin_basename( $this->file );
-		$this->plugin_dir   = plugin_dir_path( $this->file );
-		$this->plugin_url   = plugin_dir_url ( $this->file );
-	}
+class WP_Job_Manager_Companies_Fields extends WP_Job_Manager_Companies  {
 
 	/**
 	 * Setup the default hooks and actions
@@ -57,7 +12,7 @@ class WP_Job_Manager_Company_Fields {
 	 *
 	 * @return void
 	 */
-	private function setup_actions() {
+	public function __construct() {
         // register fields
 		add_action( 'init', array( $this, 'register_company_slug_field' ) );
         add_action( 'init', array( $this, 'register_company_industry_field' ) );

@@ -4,7 +4,7 @@
  * Plugin Name:       WP Job Manager - Company Profiles
  * Plugin URI:        https://wpscouts.net
  * Description:       Output a list of all companies that have posted a job, with a link to a company profile.
- * Version:           1.0.1
+ * Version:           2.0
  * Author:            Faisal Khurshid
  * Author URI:        https://wpscouts.net
  * License:           GPL-2.0+
@@ -23,7 +23,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'WP_JOB_MANAGER_COMPANY_PROFILES', '1.0.0' );
+define( 'WP_JOB_MANAGER_COMPANY_PROFILES', '2.0.0' );
 define( 'WP_JOB_MANAGER_COMPANY_PROFILES_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 
 /**
@@ -31,7 +31,7 @@ define( 'WP_JOB_MANAGER_COMPANY_PROFILES_PLUGIN_DIR', plugin_dir_path( __FILE__ 
  * This action is documented in includes/class-plugin-name-activator.php
  */
 function activate_plugin_name() {
-	require_once plugin_dir_path( __FILE__ ) . 'includes/class-wp-job-manager-company-profiles.php';
+	require_once plugin_dir_path( __FILE__ ) . 'includes/class-main.php';
 	$instance = new WP_Job_Manager_Companies();
 	$instance->plugin_activation();
 }
@@ -52,8 +52,7 @@ register_deactivation_hook( __FILE__, 'deactivate_plugin_name' );
  * The core plugin class that is used to define internationalization,
  * admin-specific hooks, and public-facing site hooks.
  */
-require plugin_dir_path( __FILE__ ) . 'includes/class-wp-job-manager-company-profiles.php';
-require plugin_dir_path( __FILE__ ) . 'includes/class-wp-job-manager-company-fields.php';
+require plugin_dir_path( __FILE__ ) . 'includes/class-main.php';
 
 /**
  * Begins execution of the plugin.
@@ -64,9 +63,7 @@ require plugin_dir_path( __FILE__ ) . 'includes/class-wp-job-manager-company-fie
  *
  * @since    1.0.0
  */
-function run_plugin_name() {
-
-	$GLOBALS['wpjmcp'] = new WP_Job_Manager_Companies(); 
-	add_action( 'plugins_loaded', array( 'WP_Job_Manager_Company_Fields', 'instance' ) );
+function wp_job_manager_companies() {
+	return WP_Job_Manager_Companies::instance(); 
 }
-run_plugin_name();
+wp_job_manager_companies();
