@@ -52,7 +52,9 @@ $excerpt_limit = get_theme_mod('capstone_companies_jobs_excerpt_limit', 2);
 									<?php foreach ( $wpjmcp->get_company_posts($company_name, $excerpt_limit) as $company ) { ?>
 										<li>
 											<div class="entry-header">
-												<a class="title" href="<?php echo esc_url(get_permalink($company->ID)); ?>"><h5><?php echo esc_html($company->post_title); ?></h5></a>
+												<h5 class="title">
+													<a href="<?php echo esc_url(get_permalink($company->ID)); ?>"><?php echo esc_html($company->post_title); ?></a>
+												</h5>
 												<?php if ( taxonomy_exists('job_listing_type') ) { ?>
 													<?php echo get_the_term_list( $company->ID, 'job_listing_type', '<span class="types">(', null, ')</span>' ); ?>
 												<?php } ?>
