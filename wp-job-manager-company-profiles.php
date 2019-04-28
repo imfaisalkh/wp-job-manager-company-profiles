@@ -33,7 +33,7 @@ define( 'WP_JOB_MANAGER_COMPANY_PROFILES_PLUGIN_DIR', plugin_dir_path( __FILE__ 
 function activate_plugin_name() {
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-main.php';
 	$instance = new WP_Job_Manager_Companies();
-	$instance->plugin_activation();
+	flush_rewrite_rules();
 }
 
 /**

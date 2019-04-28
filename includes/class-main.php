@@ -95,10 +95,6 @@ class WP_Job_Manager_Companies {
 		add_filter( 'pre_get_document_title', array( $this, 'page_title' ), 20 );
 	}
 
-	public function plugin_activation() {
-		flush_rewrite_rules();
-	}
-
 	public function get_slug() {
 		return $this->slug;
 	}

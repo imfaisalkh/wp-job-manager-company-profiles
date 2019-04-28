@@ -14,7 +14,7 @@ class WP_Job_Manager_Companies_Fields extends WP_Job_Manager_Companies  {
 	 */
 	public function __construct() {
         // register fields
-		add_action( 'init', array( $this, 'register_company_slug_field' ) );
+        add_action( 'init', array( $this, 'register_company_taxonomy_field' ) );
         add_action( 'init', array( $this, 'register_company_industry_field' ) );
         add_action( 'init', array( $this, 'register_company_foundation_field' ) );
         add_action( 'init', array( $this, 'register_company_location_field' ) );
@@ -29,22 +29,28 @@ class WP_Job_Manager_Companies_Fields extends WP_Job_Manager_Companies  {
         
         // // set fields priority
         add_filter( 'submit_job_form_fields', array( $this, 'company_fields_priority' ) );
+    
+        // handle company term field
+        add_filter( 'job_manager_term_select_field_wp_dropdown_categories_args', array( $this, 'job_manager_term_select_field_wp_dropdown_categories_args' ), 10, 3 );
+        add_filter( 'submit_job_form_fields_get_job_data', array( $this, 'submit_job_form_fields_get_job_data' ), 10, 2 );
     }
 
-	/**
-	 * Company Fields Options
-	 */
+
+    #-------------------------------------------------------------------------------#
+    #  Company Fields - Options
+    #-------------------------------------------------------------------------------#
+
 	public function company_fields_options() {
 
-        // Company Categories - Options
-        function company_categories( $options ) {
+        // Company Industries
+        function company_industries( $options ) {
             $args = array('', 'Information Technology', 'Banking & Finance', 'Marketing & Advertisement', 'Healthcare', 'Real Estate & Property', 'Textile & Garments', 'Education & Training', 'Accounts & Taxation', 'N.G.O & Social Services', 'Consultancy');
             $options = array_combine($args, $args);
             return $options;
         }
-        add_filter( 'wpjmcp_company_industry_options', 'company_categories' );
+        add_filter( 'wpjmcp_company_industry_options', 'company_industries' );
     
-        // Company Size - Options
+        // Company Size
         function company_size( $options ) {
             $args = array('', '1 - 49', '50 - 149', '150 - 249', '250 - 499', '500 - 749', '750-999', '1000 +');
             $options = array_combine($args, $args);
@@ -54,21 +60,20 @@ class WP_Job_Manager_Companies_Fields extends WP_Job_Manager_Companies  {
     
     }
 
+    #-------------------------------------------------------------------------------#
+    #  Company Fields - Priority
+    #-------------------------------------------------------------------------------#
 
-	/**
-	 * Company Fields Priority
-	 */
 	public function company_fields_priority($fields) {
         $company_fields = array(
             'company_name',
-            'company_slug',
+            'company_email',
             'company_tagline',
             'company_foundation',
             'company_location',
             'company_industry',
             'company_website',
             'company_size',
-            'company_email',
             'company_description',
             'company_video',
             'company_twitter',
@@ -84,39 +89,62 @@ class WP_Job_Manager_Companies_Fields extends WP_Job_Manager_Companies  {
         return $fields;
     }
 
-	/**
-	 * Register Company Slug Field
-	 */
-	public function register_company_slug_field() {
-		// add field in "front-end"
-		function frontend_company_slug_field( $fields ) {
-			$fields['company']['company_slug'] = array(
-				'label'       => esc_html__( 'Company Slug', 'wp-job-manager-company-profiles' ),
-				'type'        => 'text',
-				'required'    => true,
-				'priority'    => 2,
-				'placeholder' => '',
-			);
-			return $fields;
-		}
-		add_filter( 'submit_job_form_fields', 'frontend_company_slug_field' );
 
-		// add field in "back-end"
-		function admin_company_slug_field( $fields ) {
-			$fields['_company_slug'] = array(
-			'label'       => esc_html__( 'Company Slug', 'wp-job-manager-company-profiles' ),
-			'type'        => 'text',
-			'required'    => true,
-			'description' => esc_html__('If defined It\'ll be used in company permalink.', 'wp-job-manager-company-profiles'),
-			);
-			return $fields;
+    #-------------------------------------------------------------------------------#
+    #  Register Company Taxonomy Field
+    #-------------------------------------------------------------------------------#
+
+	public function register_company_taxonomy_field() {
+        
+        // add field in "front-end"
+		function frontend_company_taxonomy_field( $fields ) {
+            $fields['company']['company_term'] = array(
+                'label'       => __( 'Company Name', 'wp-job-manager-company-profiles' ),
+                'type'        => 'term-select',
+                'taxonomy'    => 'job_listing_company',
+                'required'    => false,
+                'description' => esc_html__( 'Your must be authorised to submit under this company. Otherwise it may not approve.', 'wp-job-manager-company-profiles' ),
+                'priority'    => '1',
+                'default'     => -1
+            );
+    
+            return $fields;
 		}
-		add_filter( 'job_manager_job_listing_data_fields', 'admin_company_slug_field' );
+		add_filter( 'submit_job_form_fields', 'frontend_company_taxonomy_field' );
     }
 
-    /**
-	 * Register Company Foundation Field
-	 */
+    #-------------------------------------------------------------------------------#
+    #  Handle Company Taxonomy Field
+    #-------------------------------------------------------------------------------#
+
+    // add a default "seclect company" option
+    public function job_manager_term_select_field_wp_dropdown_categories_args( $args, $key, $field ) {
+		if ( 'company_term' !== $key ) {
+			return $args;
+		}
+
+		$args['show_option_none'] = __( 'Select Company', 'wp-job-manager-company-profiles' );
+		$args['option_none_value'] = '';
+
+		return $args;
+    }
+    
+    // keep "company term" value persistent on reload form
+    public function submit_job_form_fields_get_job_data( $fields, $job ) {
+		$field = isset( $fields['company'][ 'company_term' ] ) ? $fields['company'][ 'company_term' ] : false;
+
+		if ( $field ) {
+			$fields['company'][ 'company_term' ][ 'value' ] = wp_get_object_terms( $job->ID, $field['taxonomy'], array( 'fields' => 'ids' ) );
+		}
+
+		return $fields;
+	}
+
+
+    #-------------------------------------------------------------------------------#
+    #  Register Company Foundation Field
+    #-------------------------------------------------------------------------------#
+
 	public function register_company_foundation_field() {
 		// add field in "front-end"
 		function frontend_company_foundation_field( $fields ) {
@@ -243,7 +271,7 @@ class WP_Job_Manager_Companies_Fields extends WP_Job_Manager_Companies  {
                 'label'       => esc_html__( 'Company Email', 'wp-job-manager-company-profiles' ),
                 'type'        => 'text',
                 'required'    => false,
-                'priority'    => 4
+                'priority'    => 1.5
             );
             return $fields;
         }

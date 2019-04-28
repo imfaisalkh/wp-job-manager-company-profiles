@@ -38,7 +38,7 @@ class WP_Job_Manager_Companies_Taxonomy extends WP_Job_Manager_Companies {
 		register_taxonomy( 'job_listing_company',
 			array( 'job_listing' ),
 			array(
-				'hierarchical' 			=> true,
+				'hierarchical' 			=> false,
 				'update_count_callback' => '_update_post_term_count',
 				'label' 				=> $job_plural,
 				'labels' => array(
