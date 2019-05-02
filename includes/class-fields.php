@@ -14,6 +14,8 @@ class WP_Job_Manager_Companies_Fields extends WP_Job_Manager_Companies  {
 	 */
 	public function __construct() {
         // register fields
+
+
         add_action( 'init', array( $this, 'register_company_taxonomy_field' ) );
         add_action( 'init', array( $this, 'register_company_industry_field' ) );
         add_action( 'init', array( $this, 'register_company_foundation_field' ) );
@@ -27,14 +29,17 @@ class WP_Job_Manager_Companies_Fields extends WP_Job_Manager_Companies  {
         // // register field options
         add_action( 'init', array( $this, 'company_fields_options' ) );
         
-        // // set fields priority
+        // set fields priority
         add_filter( 'submit_job_form_fields', array( $this, 'company_fields_priority' ) );
     
         // handle company term field
         add_filter( 'job_manager_term_select_field_wp_dropdown_categories_args', array( $this, 'job_manager_term_select_field_wp_dropdown_categories_args' ), 10, 3 );
         add_filter( 'submit_job_form_fields_get_job_data', array( $this, 'submit_job_form_fields_get_job_data' ), 10, 2 );
-    }
 
+        // Modify "Term Select" Field
+        add_filter( 'job_manager_term_select_field_wp_dropdown_categories_args', array( $this, 'modify_term_select_field' ) );
+
+    }
 
     #-------------------------------------------------------------------------------#
     #  Company Fields - Options
@@ -67,6 +72,7 @@ class WP_Job_Manager_Companies_Fields extends WP_Job_Manager_Companies  {
 	public function company_fields_priority($fields) {
         $company_fields = array(
             'company_name',
+            'company_term',
             'company_email',
             'company_tagline',
             'company_foundation',
@@ -95,23 +101,23 @@ class WP_Job_Manager_Companies_Fields extends WP_Job_Manager_Companies  {
     #-------------------------------------------------------------------------------#
 
 	public function register_company_taxonomy_field() {
-        
         // add field in "front-end"
-		function frontend_company_taxonomy_field( $fields ) {
+        function frontend_company_taxonomy_field( $fields ) {
             $fields['company']['company_term'] = array(
                 'label'       => __( 'Company Name', 'wp-job-manager-company-profiles' ),
                 'type'        => 'term-select',
                 'taxonomy'    => 'job_listing_company',
                 'required'    => false,
-                'description' => esc_html__( 'Your must be authorised to submit under this company. Otherwise it may not approve.', 'wp-job-manager-company-profiles' ),
+                'description' => esc_html__( 'It\'ll populate rest of the form with company data.', 'wp-job-manager-company-profiles' ),
                 'priority'    => '1',
                 'default'     => -1
             );
     
             return $fields;
-		}
-		add_filter( 'submit_job_form_fields', 'frontend_company_taxonomy_field' );
+        }
+        add_filter( 'submit_job_form_fields', 'frontend_company_taxonomy_field' );
     }
+
 
     #-------------------------------------------------------------------------------#
     #  Handle Company Taxonomy Field
@@ -381,6 +387,28 @@ class WP_Job_Manager_Companies_Fields extends WP_Job_Manager_Companies  {
             return $fields;
         }
         add_filter( 'job_manager_job_listing_data_fields', 'admin_company_industry_field' );
-	}
+    }
+    
+    #-------------------------------------------------------------------------------#
+    #  Modify "Term Select" Field
+    #-------------------------------------------------------------------------------#
+
+	public function modify_term_select_field($args) {
+        if (!current_user_can('administrator')) { // don't modify if admin
+            // if not admin, check if (logged in + limitation enabled)
+            if ( get_option('job_manager_enable_user_specific_company') ) {
+                $nullify_term_id = '9028403284021830'; // arbitrary number to force return "no terms" (since 'include' param treats '0' as return all)
+                if ( is_user_logged_in() ) {
+                    $current_user_id = get_current_user_id();
+                    $current_user_terms = capstone_get_user_companies($current_user_id);
+                    $args['include'] = $current_user_terms ? $current_user_terms : $nullify_term_id;
+                } else { // if not logged-in
+                    $args['include'] = $nullify_term_id;
+                }
+            }
+        }
+
+        return $args;
+    }
 
 }

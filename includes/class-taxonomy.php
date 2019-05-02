@@ -11,14 +11,17 @@ class WP_Job_Manager_Companies_Taxonomy extends WP_Job_Manager_Companies {
 	 * @return void
 	 */
 	public function __construct() {
+		/** Rgister Taxonomy */
 		add_action( 'init', array( $this, 'register_taxonomy' ), 0 );
+
+		/** Register Settings */
+		add_filter( 'job_manager_settings', array( $this, 'job_manager_settings' ) );
 	}
 
-	/**
-	 * Create the `job_listing_company` taxonomy.
-	 *
-	 * @since 1.0.0
-	 */
+    #-------------------------------------------------------------------------------#
+    #  Register `job_listing_company` taxonomy
+    #-------------------------------------------------------------------------------#
+
 	public function register_taxonomy() {
 		$admin_capability = 'manage_job_listings';
 
@@ -68,5 +71,22 @@ class WP_Job_Manager_Companies_Taxonomy extends WP_Job_Manager_Companies {
 		);
 
 	}
+
+    #-------------------------------------------------------------------------------#
+    #  Register `job_listing_company` taxonomy
+    #-------------------------------------------------------------------------------#
+
+	public function job_manager_settings( $settings ) {
+        $settings[ 'job_submission' ][1][] = array(
+            'name'     => 'job_manager_enable_user_specific_company',
+            'std'      => '1',
+            'label'    => __( 'User Specific Companies', 'wp-job-manager-locations' ),
+            'cb_label' => __( 'Enable user-specific companies', 'wp-job-manager-locations' ),
+            'desc'     => __( 'Users would only be limited to assigned companies under "Existing Company" tab.', 'wp-job-manager-locations' ),
+            'type'     => 'checkbox'
+        );
+
+        return $settings;
+    }
 
 }
