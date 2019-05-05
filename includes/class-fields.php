@@ -47,14 +47,6 @@ class WP_Job_Manager_Companies_Fields extends WP_Job_Manager_Companies  {
 
 	public function company_fields_options() {
 
-        // Company Industries
-        function company_industries( $options ) {
-            $args = array('', 'Information Technology', 'Banking & Finance', 'Marketing & Advertisement', 'Healthcare', 'Real Estate & Property', 'Textile & Garments', 'Education & Training', 'Accounts & Taxation', 'N.G.O & Social Services', 'Consultancy');
-            $options = array_combine($args, $args);
-            return $options;
-        }
-        add_filter( 'wpjmcp_company_industry_options', 'company_industries' );
-    
         // Company Size
         function company_size( $options ) {
             $args = array('', '1 - 49', '50 - 149', '150 - 249', '250 - 499', '500 - 749', '750-999', '1000 +');
@@ -360,33 +352,26 @@ class WP_Job_Manager_Companies_Fields extends WP_Job_Manager_Companies  {
 	}
 
     /**
-	 * Register Company Categories Field
+	 * Register Company Industry Field
 	 */
 	public function register_company_industry_field() {
+
         // add field in "front-end"
         function frontend_company_industry_field( $fields ) {
             $fields['company']['company_industry'] = array(
                 'label'       => esc_html__( 'Industry', 'wp-job-manager-company-profiles' ),
-                'type'        => 'select',
+                'type'        => 'term-select',
+                'taxonomy'    => 'job_listing_industry',
                 'required'    => false,
-                'options'     => apply_filters( 'wpjmcp_company_industry_options', array('') ),
-                'priority'    => 4
+                'description' => esc_html__( 'It\'ll populate rest of the form with company data.', 'wp-job-manager-company-profiles' ),
+                'priority'    => '4',
+                'default'     => -1
             );
+    
             return $fields;
         }
         add_filter( 'submit_job_form_fields', 'frontend_company_industry_field' );
 
-        // add field in "back-end"
-        function admin_company_industry_field( $fields ) {
-            $fields['_company_industry'] = array(
-                'label'       => esc_html__( 'Company Industry', 'wp-job-manager-company-profiles' ),
-                'type'        => 'select',
-                'options'     => apply_filters( 'wpjmcp_company_industry_options', array('') ),
-                'description' => ''
-            );
-            return $fields;
-        }
-        add_filter( 'job_manager_job_listing_data_fields', 'admin_company_industry_field' );
     }
     
     #-------------------------------------------------------------------------------#

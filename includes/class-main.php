@@ -49,7 +49,7 @@ class WP_Job_Manager_Companies {
 		$this->file         = __FILE__;
 		$this->basename     = plugin_basename( $this->file );
 		$this->plugin_dir   = plugin_dir_path( $this->file );
-		$this->plugin_url   = plugin_dir_url ( $this->file );
+		$this->plugin_url   = plugin_dir_url( $this->file );
 		$this->lang_dir     = trailingslashit( $this->plugin_dir . 'languages' );
 		$this->domain       = 'wp-job-manager-company-profiles';
 		
@@ -58,8 +58,8 @@ class WP_Job_Manager_Companies {
 		 */
 		$files = array(
             'class-taxonomy.php',
-            'class-fields.php',
-            // 'class-template-loader.php',
+			'class-fields.php',
+            'class-template-loader.php',
 		);
 		
         foreach ( $files as $file ) {
@@ -68,7 +68,7 @@ class WP_Job_Manager_Companies {
 		
 		$this->taxonomy = new WP_Job_Manager_Companies_Taxonomy;
 		$this->fields = new WP_Job_Manager_Companies_Fields;
-        // $this->template = new WP_Job_Manager_Companies_Template_Loader;
+        $this->template = new WP_Job_Manager_Companies_Template_Loader;
 
 		/**
 		 * The slug for creating permalinks
@@ -91,20 +91,21 @@ class WP_Job_Manager_Companies {
 		/** Body Class for Taxonomy Page */
 		add_action( 'body_class', array( $this, 'company_taxonomy_class' ) );
 		
-		/** Page Title for Taxonomy Page */
+		/** Modify Page Title for Taxonomy Page */
 		add_filter( 'pre_get_document_title', array( $this, 'page_title' ), 20 );
+
+		/** Register Shortcode */
+		add_shortcode( 'job_manager_companies', array( $this, 'job_manager_companies' ) );
 	}
 
 	public function get_slug() {
 		return $this->slug;
 	}
 
-	/**
-	 * Localisation
-	 *
-	 * @access private
-	 * @return void
-	 */
+    #-------------------------------------------------------------------------------#
+    #  Localisation
+    #-------------------------------------------------------------------------------#
+
 	public function load_plugin_textdomain() {
 		$locale = apply_filters( 'plugin_locale', get_locale(), 'wp-job-manager-company-profiles' );
 
@@ -112,17 +113,19 @@ class WP_Job_Manager_Companies {
 		load_plugin_textdomain( 'wp-job-manager-company-profiles', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 	}
 
-	/**
-	 * Add Classes to company taxonomy page
-	 */
+    #-------------------------------------------------------------------------------#
+    #  Body Class for Taxonomy Page
+    #-------------------------------------------------------------------------------#
+
 	public function company_taxonomy_class($classes) {
 		$classes[] = is_tax('job_listing_company') ? 'single-company' : '';
 		return $classes;
 	}
 
-	/**
-	 * Set a page title when viewing company taxonomy page
-	 */
+    #-------------------------------------------------------------------------------#
+    #  Modify Page Title for Taxonomy Page
+    #-------------------------------------------------------------------------------#
+
 	function page_title($title) {
 		global $paged, $page;
 		$sep = apply_filters( 'document_title_separator', '-' );
@@ -140,4 +143,16 @@ class WP_Job_Manager_Companies {
 
 		return $title;
 	}
+
+    #-------------------------------------------------------------------------------#
+    #  Register the `[job_manager_companies]` shortcode
+    #-------------------------------------------------------------------------------#
+
+	public function job_manager_companies( $atts ) {
+        $atts = shortcode_atts( array(), $atts );
+        ob_start();
+		$this->template->get_template_part( 'content', 'company_listing' );
+        return ob_get_clean();
+	}
+
 }
