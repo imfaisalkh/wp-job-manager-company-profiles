@@ -379,21 +379,27 @@ class WP_Job_Manager_Companies_Fields extends WP_Job_Manager_Companies  {
     #-------------------------------------------------------------------------------#
 
 	public function modify_term_select_field($args) {
-        if (!current_user_can('administrator')) { // don't modify if admin
-            // if not admin, check if (logged in + limitation enabled)
-            if ( get_option('job_manager_enable_user_specific_company') ) {
-                $nullify_term_id = '9028403284021830'; // arbitrary number to force return "no terms" (since 'include' param treats '0' as return all)
-                if ( is_user_logged_in() ) {
-                    $current_user_id = get_current_user_id();
-                    $current_user_terms = capstone_get_user_companies($current_user_id);
-                    $args['include'] = $current_user_terms ? $current_user_terms : $nullify_term_id;
-                } else { // if not logged-in
-                    $args['include'] = $nullify_term_id;
+        if ($args['taxonomy'] != 'job_listing_company') {
+            return $args;
+        } else {
+            if (!current_user_can('administrator')) { // don't modify if admin
+                // if not admin, check if (logged in + limitation enabled)
+                if ( get_option('job_manager_enable_user_specific_company') ) {
+                    $nullify_term_id = '9028403284021830'; // arbitrary number to force return "no terms" (since 'include' param treats '0' as return all)
+                    if ( is_user_logged_in() ) {
+                        $current_user_id = get_current_user_id();
+                        $current_user_terms = capstone_get_user_companies($current_user_id);
+                        $args['include'] = $current_user_terms ? $current_user_terms : $nullify_term_id;
+                    } else { // if not logged-in
+                        $args['include'] = $nullify_term_id;
+                    }
+                } else {
+                    return $args;
                 }
             }
+            return $args;
         }
 
-        return $args;
     }
 
 }
