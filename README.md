@@ -1,1 +1,1 @@
-wp-job-manager-companies
+WP Job Manager - Company Profiles

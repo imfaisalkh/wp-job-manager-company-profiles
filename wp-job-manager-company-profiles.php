@@ -4,7 +4,7 @@
  * Plugin Name:       WP Job Manager - Company Profiles
  * Plugin URI:        https://wpscouts.net
  * Description:       Output a list of all companies that have posted a job, with a link to a company profile.
- * Version:           2.0.0
+ * Version:           2.1.0
  * Author:            Faisal Khurshid
  * Author URI:        https://wpscouts.net
  * License:           GPL-2.0+
@@ -23,7 +23,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'WP_JOB_MANAGER_COMPANY_PROFILES', '2.0.0' );
+define( 'WP_JOB_MANAGER_COMPANY_PROFILES', '2.1.0' );
 define( 'WP_JOB_MANAGER_COMPANY_PROFILES_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 
 /**
