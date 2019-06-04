@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the WP Job Manager - Company Profiles plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: WP Job Manager - Company Profiles 1.0.0\n"
+"Project-Id-Version: WP Job Manager - Company Profiles 2.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wp-job-manager-company-profiles\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2019-01-20T18:48:27+00:00\n"
+"POT-Creation-Date: 2019-05-09T19:35:44+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.1.0\n"
 "X-Domain: wp-job-manager-company-profiles\n"
@@ -31,98 +31,161 @@ msgstr ""
 msgid "Faisal Khurshid"
 msgstr ""
 
-#: templates/content-company_listing.php:40
+#: templates/content-company_listing.php:58
 msgid "Position"
 msgid_plural "Positions"
 msgstr[0] ""
 
-#: templates/content-company_listing.php:47
-msgid "Open Positions"
+#: includes/class-fields.php:99
+msgid "Company Name"
 msgstr ""
 
-#: templates/content-company_listing.php:49
-msgid "see all"
+#: includes/class-fields.php:103
+#: includes/class-fields.php:366
+msgid "It'll populate rest of the form with company data."
 msgstr ""
 
-#: templates/content-company_listing.php:66
-msgid "Anywhere"
+#: includes/class-fields.php:124
+msgid "Select Company"
 msgstr ""
 
-#: includes/class-wp-job-manager-company-fields.php:139
-#: includes/class-wp-job-manager-company-fields.php:152
-msgid "Company Slug"
-msgstr ""
-
-#: includes/class-wp-job-manager-company-fields.php:155
-msgid "If defined It'll be used in company permalink."
-msgstr ""
-
-#: includes/class-wp-job-manager-company-fields.php:169
-#: includes/class-wp-job-manager-company-fields.php:182
+#: includes/class-fields.php:150
+#: includes/class-fields.php:163
 msgid "Foundation Year"
 msgstr ""
 
-#: includes/class-wp-job-manager-company-fields.php:199
-#: includes/class-wp-job-manager-company-fields.php:211
+#: includes/class-fields.php:180
+#: includes/class-fields.php:192
 msgid "Facebook Username"
 msgstr ""
 
-#: includes/class-wp-job-manager-company-fields.php:227
-#: includes/class-wp-job-manager-company-fields.php:239
+#: includes/class-fields.php:209
+#: includes/class-fields.php:221
 msgid "LinkedIn Username"
 msgstr ""
 
-#: includes/class-wp-job-manager-company-fields.php:256
+#: includes/class-fields.php:239
 msgid "Description"
 msgstr ""
 
-#: includes/class-wp-job-manager-company-fields.php:259
-#: includes/class-wp-job-manager-company-fields.php:272
+#: includes/class-fields.php:242
+#: includes/class-fields.php:255
 msgid "Describe your company in a few words."
 msgstr ""
 
-#: includes/class-wp-job-manager-company-fields.php:269
+#: includes/class-fields.php:252
 msgid "Company Description"
 msgstr ""
 
-#: includes/class-wp-job-manager-company-fields.php:286
-#: includes/class-wp-job-manager-company-fields.php:298
+#: includes/class-fields.php:269
+#: includes/class-fields.php:281
 msgid "Company Email"
 msgstr ""
 
-#: includes/class-wp-job-manager-company-fields.php:301
+#: includes/class-fields.php:284
 msgid "Company email which is used to contact company"
 msgstr ""
 
-#: includes/class-wp-job-manager-company-fields.php:302
+#: includes/class-fields.php:285
 msgid "Company Website will be used for contact, if email not provided."
 msgstr ""
 
-#: includes/class-wp-job-manager-company-fields.php:316
+#: includes/class-fields.php:299
 msgid "Location"
 msgstr ""
 
-#: includes/class-wp-job-manager-company-fields.php:329
+#: includes/class-fields.php:312
 msgid "Company Location"
 msgstr ""
 
-#: includes/class-wp-job-manager-company-fields.php:348
-#: includes/class-wp-job-manager-company-fields.php:361
+#: includes/class-fields.php:331
+#: includes/class-fields.php:344
 msgid "Company Size"
 msgstr ""
 
-#: includes/class-wp-job-manager-company-fields.php:378
+#: includes/class-fields.php:362
+#: includes/class-taxonomy.php:83
 msgid "Industry"
 msgstr ""
 
-#: includes/class-wp-job-manager-company-fields.php:391
-msgid "Company Industry"
+#: includes/class-taxonomy.php:29
+msgid "Company"
 msgstr ""
 
-#: includes/class-wp-job-manager-company-profiles.php:76
+#: includes/class-taxonomy.php:30
+msgid "Companies"
+msgstr ""
+
+#: includes/class-taxonomy.php:34
+msgctxt "Company slug - resave permalinks after changing this"
 msgid "company"
 msgstr ""
 
-#: includes/class-wp-job-manager-company-profiles.php:486
+#: includes/class-taxonomy.php:51
+#: includes/class-taxonomy.php:105
+msgid "Search %s"
+msgstr ""
+
+#: includes/class-taxonomy.php:52
+#: includes/class-taxonomy.php:106
+msgid "All %s"
+msgstr ""
+
+#: includes/class-taxonomy.php:53
+#: includes/class-taxonomy.php:107
+msgid "Parent %s"
+msgstr ""
+
+#: includes/class-taxonomy.php:54
+#: includes/class-taxonomy.php:108
+msgid "Parent %s:"
+msgstr ""
+
+#: includes/class-taxonomy.php:55
+#: includes/class-taxonomy.php:109
+msgid "Edit %s"
+msgstr ""
+
+#: includes/class-taxonomy.php:56
+#: includes/class-taxonomy.php:110
+msgid "Update %s"
+msgstr ""
+
+#: includes/class-taxonomy.php:57
+#: includes/class-taxonomy.php:111
+msgid "Add New %s"
+msgstr ""
+
+#: includes/class-taxonomy.php:58
+#: includes/class-taxonomy.php:112
+msgid "New %s Name"
+msgstr ""
+
+#: includes/class-taxonomy.php:84
+msgid "Industries"
+msgstr ""
+
+#: includes/class-taxonomy.php:88
+msgctxt "Industry slug - resave permalinks after changing this"
+msgid "industry"
+msgstr ""
+
+#: includes/class-taxonomy.php:138
+msgid "User Specific Companies"
+msgstr ""
+
+#: includes/class-taxonomy.php:139
+msgid "Enable user-specific companies"
+msgstr ""
+
+#: includes/class-taxonomy.php:140
+msgid "Users would only be limited to assigned companies under \"Existing Company\" tab."
+msgstr ""
+
+#: includes/class-main.php:76
+msgid "company"
+msgstr ""
+
+#: includes/class-main.php:140
 msgid "Jobs at %s"
 msgstr ""

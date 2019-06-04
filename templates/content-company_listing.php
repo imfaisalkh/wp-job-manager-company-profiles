@@ -3,86 +3,72 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-// Helper Variable(s)
-global $wpjmcp;
+// Search Query Variable(s)
+$search_query = [];
+$search_keywords = isset($_GET['search_keywords']) ? $_GET['search_keywords'] : null;
+$search_location = isset($_GET['search_location']) ? $_GET['search_location'] : null;
+$search_industry = isset($_GET['search_industry']) ? $_GET['search_industry'] : null;
 
-$search_keywords = isset($_GET['search_keywords']) ? $_GET['search_keywords'] : '';
-$search_location = isset($_GET['search_location']) ? $_GET['search_location'] : '';
-$search_industry = isset($_GET['search_industry']) ? $_GET['search_industry'] : '';
+array_push($search_query, $search_keywords, $search_location, $search_industry);
 
-$companies = $wpjmcp->get_companies($search_keywords, $search_location, $search_industry);
+// Query all `job_listing_company` terms
+$term_args = array(
+	'taxonomy'  => 'job_listing_company',
+	'hide_empty' => false, // also retrieve terms which are not used yet
+	'fields' => 'tt_ids',
+);
 
+$company_terms = get_terms($term_args);
 ?>
 <ul class="company_listings">
-	<?php if ($companies) { ?>
-		<?php foreach ( $companies as $company_name ) { ?>
+	<?php if ( $company_terms ) { ?>
+		<?php foreach ( $company_terms as $term_id ) { ?>
 			<?php
-				$all_company_data = $wpjmcp->all_company_data($company_name);
-				$last_company_data = $wpjmcp->last_company_data($company_name);
-				$company_desc = $last_company_data['company_info'];
+				// get company data
+				$term = get_term( $term_id, 'job_listing_company' ); // get the current term object from it's ID
+				$company_query = capstone_get_company_data($term, $search_query, $return='query');
 			?>
-			<li class="company_listing">
-					<a href="<?php echo esc_url($wpjmcp->company_url($last_company_data['company_slug'], $company_name)); ?>">
-						<img class="company_logo" src="<?php echo esc_url($last_company_data['company_logo']); ?>" alt="">
-						<div class="company">
-							<h3><?php echo esc_html($company_name); ?></h3>
-							<p class="company-desc">
-								<?php
-									if (strlen($company_desc) <=100) {
-										echo $company_desc;
-									} else {
-										echo substr($company_desc, 0, 100) . '...';
-									}
-								?>  
-							</p>
-						</div>
-						<ul class="company-meta">
-							<li class="open-positions"><?php echo esc_attr($all_company_data['count']); ?> <?php echo _n( 'Position', 'Positions', $all_company_data['count'], 'wp-job-manager-company-profiles' ); ?></li>
-							<li class="location"><?php echo esc_html($last_company_data['company_location']); ?></li>
-						</ul>
-					</a>
-					<?php if (get_theme_mod('capstone_companies_jobs_excerpt', 'enable') == 'enable') { ?>
-						<div class="recent-jobs">
-							<div class="inner">
-								<h3 class="section-title"><?php echo esc_html__('Open Positions', 'wp-job-manager-company-profiles'); ?></h3>
-								<?php if ($all_company_data['count'] > get_theme_mod('capstone_companies_jobs_excerpt_limit', 2)) { ?>
-									<a class="see-all" href="<?php echo esc_url($wpjmcp->company_url($last_company_data['company_slug'], $company_name)); ?>" class="see-more"><?php echo esc_html__('see all', 'wp-job-manager-company-profiles'); ?> &#10230;</a>
-								<?php } ?>
-								<ul>
-									<?php $i = 0; ?>
-									<?php foreach ( $all_company_data['company_posts'] as $company ) { ?>
-										<li>
-											<div class="entry-header">
-												<a class="title" href="<?php echo esc_url(get_permalink($company->ID)); ?>"><h5><?php echo esc_html($company->post_title); ?></h5></a>
-												<?php if ( taxonomy_exists('job_listing_type') ) { ?>
-													<?php echo get_the_term_list( $company->ID, 'job_listing_type', '<span class="types">(', null, ')</span>' ); ?>
-												<?php } ?>
-											</div>
-											<div class="entry-footer">
-												<span class="location">
-													<?php if ( get_field('_job_location', $company->ID) ) { ?>
-														<?php echo get_field('_job_location', $company->ID); ?>
-													<?php } else { ?>
-														<?php echo esc_html__('Anywhere', 'wp-job-manager-company-profiles'); ?>
-													<?php } ?>
-												</span>
-												<?php if ( taxonomy_exists('job_listing_category') ) { ?>
-													<?php echo get_the_term_list( $company->ID, 'job_listing_category', '<span class="categories">', null, '</span>' ); ?>
-												<?php } ?>
-											</div>
-										</li>
-										<?php if (++$i == get_theme_mod('capstone_companies_jobs_excerpt_limit', 2)) break; ?>
-									<?php } ?>
-								</ul>
+			<?php if ( $company_query->have_posts() ) { ?>
+				<?php while ( $company_query->have_posts() ) : $company_query->the_post(); ?>
+					<?php
+						// Helper Variable(s)
+						$company_permalink = get_term_link($term_id, 'job_listing_company');
+						$company_desc = get_field('_company_description') ? get_field('_company_description') : get_field('_company_tagline');
+						$company_desc_formatted = strlen($company_desc) <=100 ? $company_desc : substr($company_desc, 0, 100) . '...';
+						$company_location = get_field('_company_location');
+						$open_positions = $company_query->found_posts;
+						$is_company_positions = get_theme_mod('capstone_companies_jobs_excerpt', 'enable');
+						$company_positions_limit = get_theme_mod('capstone_companies_jobs_excerpt_limit', 2);
+					
+						// Helper Variable(s) - Pass Variables
+						set_query_var( 'term', $term );
+						set_query_var( 'company_permalink', $company_permalink ); // pass variable to "get_template_part"
+						set_query_var( 'open_positions', $open_positions ); // pass variable to "get_template_part"
+						set_query_var( 'company_positions_limit', $company_positions_limit ); // pass variable to "get_template_part"
+					?>
+					
+					<li class="company_listing">
+						<a href="<?php echo esc_url($company_permalink); ?>">
+							<?php the_company_logo(); ?>
+							<div class="company">
+								<?php the_company_name( '<h3 class="title">', '</h3>' ); ?>
+								<p class="company-desc"><?php echo $company_desc_formatted; ?></p>
 							</div>
-						</div>
-					<?php } ?>
-			</li>
+							<ul class="company-meta">
+								<li class="open-positions"><?php echo esc_attr($open_positions); ?> <?php echo _n( 'Position', 'Positions', $open_positions, 'wp-job-manager-company-profiles' ); ?></li>
+								<li class="location"><?php echo esc_html($company_location); ?></li>
+							</ul>
+						</a>
+						<?php if ($is_company_positions == 'enable') { ?>
+							<?php get_template_part( 'includes/company-positions.inc' ); ?>
+						<?php } ?>
+					</li>
+				<?php endwhile; ?>
+			<?php } ?>
 		<?php } ?>
 	<?php } else { ?>
 		<li class="no_company_listings_found">
-			<?php echo esc_html('There are no listings matching your search.', 'wp-job-manager-company-profiles'); ?>
+			<?php echo esc_html__('There are no companies matching your criteria.', 'wp-job-manager-company-profiles'); ?>
 		</li>
 	<?php } ?>
-
 </ul>
