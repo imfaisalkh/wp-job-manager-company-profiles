@@ -19,6 +19,7 @@ $term_args = array(
 );
 
 $company_terms = get_terms($term_args);
+$has_company_result = false;
 ?>
 <ul class="company_listings">
 	<?php if ( $company_terms ) { ?>
@@ -39,6 +40,7 @@ $company_terms = get_terms($term_args);
 						$open_positions = $company_query->found_posts;
 						$is_company_positions = get_theme_mod('capstone_companies_jobs_excerpt', 'enable');
 						$company_positions_limit = get_theme_mod('capstone_companies_jobs_excerpt_limit', 2);
+						$has_company_result = true;
 					
 						// Helper Variable(s) - Pass Variables
 						set_query_var( 'term', $term );
@@ -49,7 +51,9 @@ $company_terms = get_terms($term_args);
 					
 					<li class="company_listing">
 						<a href="<?php echo esc_url($company_permalink); ?>">
-							<?php the_company_logo(); ?>
+							<div class="logo">
+								<?php the_company_logo('capstone-listing-thumbnail'); ?>
+							</div>
 							<div class="company">
 								<?php the_company_name( '<h3 class="title">', '</h3>' ); ?>
 								<p class="company-desc"><?php echo $company_desc_formatted; ?></p>
@@ -66,7 +70,8 @@ $company_terms = get_terms($term_args);
 				<?php endwhile; ?>
 			<?php } ?>
 		<?php } ?>
-	<?php } else { ?>
+	<?php } ?>
+	<?php if (!$has_company_result) { ?>
 		<li class="no_company_listings_found">
 			<?php echo esc_html__('There are no companies matching your criteria.', 'wp-job-manager-company-profiles'); ?>
 		</li>
