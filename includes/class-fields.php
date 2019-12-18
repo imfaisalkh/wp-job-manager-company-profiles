@@ -40,6 +40,9 @@ class WP_Job_Manager_Companies_Fields extends WP_Job_Manager_Companies  {
         // Create "Company Term" on Submission
         add_action( 'job_manager_update_job_data', array( $this, 'create_company_term' ), 10, 2 );
 
+        // Make sure that "New Company" form is blank
+        add_filter( 'submit_job_form_fields_get_user_data', array( $this, 'blank_new_company' ) );
+
     }
 
     #-------------------------------------------------------------------------------#
@@ -116,7 +119,7 @@ class WP_Job_Manager_Companies_Fields extends WP_Job_Manager_Companies  {
     #  Handle Company Taxonomy Field
     #-------------------------------------------------------------------------------#
 
-    // add a default "seclect company" option
+    // add a default "select company" option
     public function job_manager_term_select_field_wp_dropdown_categories_args( $args, $key, $field ) {
 		if ( 'company_term' !== $key ) {
 			return $args;
@@ -409,14 +412,64 @@ class WP_Job_Manager_Companies_Fields extends WP_Job_Manager_Companies  {
 
 	public function create_company_term($id, $values) {
         $current_user_id = get_current_user_id();
+        $company_uniqueness = false;
         $company_name = $values['company']['company_name'];
+        $company_term = $values['company']['company_term'];
         $term_exist = term_exists( $company_name, 'job_listing_company' );
-        // if company term does not exist
-        if (!$term_exist) {
-            $term = wp_insert_term( $company_name, 'job_listing_company' ); // create company term
+        $term = wp_insert_term( $company_name, 'job_listing_company' ); // create company term
+
+        if (is_wp_error($term)) { // if term already exist
+            if ($company_term == '') {
+
+                // START: User-Specific Company Uniqueness Test
+                $user_company_args = array(
+                    'taxonomy'  => 'job_listing_company',
+                    'name' => $company_name,
+                    'hide_empty' => false, // also retrieve terms which are not used yet
+                    'meta_query' => array(
+                        array(
+                        'key'       => 'company_assigned_users',
+                        'value'     => $current_user_id,
+                        'compare'   => 'LIKE'
+                        )
+                    ),
+                );
+                $user_companies = get_terms( $user_company_args );
+                if (!empty($user_companies)) {
+                    $company_uniqueness = true;
+                }
+                // END: User-Specific Company Uniqueness Test
+
+                if ($company_uniqueness) { // if company is supposed to be unique, throw an error
+                    throw new Exception( __( 'A company with the name provided already exists in our system.', 'wp-job-manager-company-profiles' ) );
+                } else { // otherwise, create a new company with same name but different slug
+                    $company_name_unique = $company_name .' '. rand(10 ,99); // make company name unique
+                    $term = wp_insert_term( $company_name_unique, 'job_listing_company' ); // create company term
+                    
+                    update_term_meta( $term['term_id'], 'company_assigned_users', array($current_user_id) ); // assign user to company term
+                    wp_set_post_terms( $id, $company_name_unique, 'job_listing_company' );  // assign term to the job listing
+                    
+                    $company_name_generic = substr($company_name_unique, 0, -2); // make company name generic
+                    wp_update_term( $term['term_id'], 'job_listing_company', array('name' => $company_name_generic) ); // update company name from unique to generic
+                }
+            }
+        } else {
             update_term_meta( $term['term_id'], 'company_assigned_users', array($current_user_id) ); // assign user to company term
             wp_set_post_terms( $id, $company_name, 'job_listing_company' );  // assign term to the job listing
         }
+    }
+
+    #-------------------------------------------------------------------------------#
+    #  Make sure that "New Company" form is blank
+    #-------------------------------------------------------------------------------#
+
+	public function blank_new_company($fields) {
+        if (empty( $_POST['submit_job'] )) {
+            foreach ( $fields['company'] as $key => $field ) {
+                $fields['company'][ $key ]['value'] = '';
+            }
+        }
+        return $fields;
     }
 
 
