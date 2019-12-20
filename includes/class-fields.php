@@ -411,6 +411,8 @@ class WP_Job_Manager_Companies_Fields extends WP_Job_Manager_Companies  {
     #-------------------------------------------------------------------------------#
 
 	public function create_company_term($id, $values) {
+        $is_editing_job = $_GET['action'] == 'edit';
+
         $current_user_id = get_current_user_id();
         $company_uniqueness = false;
         $company_name = $values['company']['company_name'];
@@ -419,39 +421,44 @@ class WP_Job_Manager_Companies_Fields extends WP_Job_Manager_Companies  {
         $term = wp_insert_term( $company_name, 'job_listing_company' ); // create company term
 
         if (is_wp_error($term)) { // if term already exist
-            if ($company_term == '') {
+            if (!$is_editing_job) { // isn't editing existing job
+                if ($company_term == '') {
 
-                // START: User-Specific Company Uniqueness Test
-                $user_company_args = array(
-                    'taxonomy'  => 'job_listing_company',
-                    'name' => $company_name,
-                    'hide_empty' => false, // also retrieve terms which are not used yet
-                    'meta_query' => array(
-                        array(
-                        'key'       => 'company_assigned_users',
-                        'value'     => $current_user_id,
-                        'compare'   => 'LIKE'
-                        )
-                    ),
-                );
-                $user_companies = get_terms( $user_company_args );
-                if (!empty($user_companies)) {
-                    $company_uniqueness = true;
+                    // START: User-Specific Company Uniqueness Test
+                    $user_company_args = array(
+                        'taxonomy'  => 'job_listing_company',
+                        'name' => $company_name,
+                        'hide_empty' => false, // also retrieve terms which are not used yet
+                        'meta_query' => array(
+                            array(
+                            'key'       => 'company_assigned_users',
+                            'value'     => $current_user_id,
+                            'compare'   => 'LIKE'
+                            )
+                        ),
+                    );
+                    $user_companies = get_terms( $user_company_args );
+                    if (!empty($user_companies)) {
+                        $company_uniqueness = true;
+                    }
+                    // END: User-Specific Company Uniqueness Test
+    
+                    if ($company_uniqueness) { // if company is supposed to be unique, throw an error
+                        throw new Exception( __( 'A company with the name provided already exists in our system.', 'wp-job-manager-company-profiles' ) );
+                    } else { // otherwise, create a new company with same name but different slug
+                        $company_name_unique = $company_name .' '. rand(10 ,99); // make company name unique
+                        $term = wp_insert_term( $company_name_unique, 'job_listing_company' ); // create company term
+                        
+                        update_term_meta( $term['term_id'], 'company_assigned_users', array($current_user_id) ); // assign user to company term
+                        wp_set_post_terms( $id, $company_name_unique, 'job_listing_company' );  // assign term to the job listing
+                        
+                        $company_name_generic = substr($company_name_unique, 0, -2); // make company name generic
+                        wp_update_term( $term['term_id'], 'job_listing_company', array('name' => $company_name_generic) ); // update company name from unique to generic
+                    }
                 }
-                // END: User-Specific Company Uniqueness Test
-
-                if ($company_uniqueness) { // if company is supposed to be unique, throw an error
-                    throw new Exception( __( 'A company with the name provided already exists in our system.', 'wp-job-manager-company-profiles' ) );
-                } else { // otherwise, create a new company with same name but different slug
-                    $company_name_unique = $company_name .' '. rand(10 ,99); // make company name unique
-                    $term = wp_insert_term( $company_name_unique, 'job_listing_company' ); // create company term
-                    
-                    update_term_meta( $term['term_id'], 'company_assigned_users', array($current_user_id) ); // assign user to company term
-                    wp_set_post_terms( $id, $company_name_unique, 'job_listing_company' );  // assign term to the job listing
-                    
-                    $company_name_generic = substr($company_name_unique, 0, -2); // make company name generic
-                    wp_update_term( $term['term_id'], 'job_listing_company', array('name' => $company_name_generic) ); // update company name from unique to generic
-                }
+            } else { // when editing job submission
+                // update_term_meta( $term['term_id'], 'company_assigned_users', array($current_user_id) ); // assign user to company term
+                wp_set_post_terms( $id, $company_name, 'job_listing_company' );  // re-assign term to the job listing
             }
         } else {
             update_term_meta( $term['term_id'], 'company_assigned_users', array($current_user_id) ); // assign user to company term
