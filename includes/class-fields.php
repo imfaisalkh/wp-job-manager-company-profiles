@@ -303,7 +303,7 @@ class WP_Job_Manager_Companies_Fields extends WP_Job_Manager_Companies  {
                 'label'       => esc_html__( 'Location', 'wp-job-manager-company-profiles' ),
                 'type'        => 'text',
                 'required'    => false,
-                'placeholder' => 'e.g. Paris',
+                'placeholder' => esc_html__( 'e.g. Paris', 'wp-job-manager-company-profiles' ),
                 'priority'    => 4
             );
             return $fields;
@@ -316,7 +316,7 @@ class WP_Job_Manager_Companies_Fields extends WP_Job_Manager_Companies  {
             'label'       => esc_html__( 'Company Location', 'wp-job-manager-company-profiles' ),
             'type'        => 'text',
             'required'    => false,
-            'placeholder' => 'e.g. Paris',
+            'placeholder' => esc_html__( 'e.g. Paris', 'wp-job-manager-company-profiles' ),
             'description' => ''
             );
             return $fields;
@@ -411,7 +411,8 @@ class WP_Job_Manager_Companies_Fields extends WP_Job_Manager_Companies  {
     #-------------------------------------------------------------------------------#
 
 	public function create_company_term($id, $values) {
-        $is_editing_job = $_GET['action'] == 'edit';
+        // $is_editing_job = isset($_GET['action']) ? $_GET['action'] == 'edit' : false;
+        $is_editing_job = isset($_GET['action']) ? $_GET['action'] == 'edit' : false;
 
         $current_user_id = get_current_user_id();
         $company_uniqueness = false;
@@ -444,7 +445,11 @@ class WP_Job_Manager_Companies_Fields extends WP_Job_Manager_Companies  {
                     // END: User-Specific Company Uniqueness Test
     
                     if ($company_uniqueness) { // if company is supposed to be unique, throw an error
-                        throw new Exception( __( 'A company with the name provided already exists in our system.', 'wp-job-manager-company-profiles' ) );
+                        if (!$_POST['job_id']) { // if editing job before submission but after preview
+                            throw new Exception( __( 'A company with the name provided already exists in our system for your account. Please choose that company under "Existing Company" tab.', 'wp-job-manager-company-profiles' ) );
+                        } else {
+                            wp_set_post_terms( $id, $company_name, 'job_listing_company' );  // re-assign term to the job listing
+                        }
                     } else { // otherwise, create a new company with same name but different slug
                         $company_name_unique = $company_name .' '. rand(10 ,99); // make company name unique
                         $term = wp_insert_term( $company_name_unique, 'job_listing_company' ); // create company term
